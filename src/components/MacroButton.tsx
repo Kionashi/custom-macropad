@@ -1,14 +1,22 @@
 type MacroButtonProps = {
-  label: string,
+  label: string
   icon?: string
+  size?: "small" | "wide" | "large"
 }
 
-function MacroButton({ label, icon }: MacroButtonProps) {
+const sizeClasses = {
+  small: 'col-span-1 row-span-1',
+  wide: 'col-span-2 row-span-1',
+  large: 'col-span-2 row-span-2',
+}
+
+function MacroButton({ label, icon, size = "small" }: MacroButtonProps) {
   return (
     <button
-    className="
-    w-32
-    h-32
+    className={`
+    w-full
+    h-full
+    ${sizeClasses[size]}
     rounded-2xl
     bg-zinc-800
     text-white
@@ -17,7 +25,8 @@ function MacroButton({ label, icon }: MacroButtonProps) {
     shadow-lg
     transition
     hover:bg-zinc-700
-    active:scale-95">
+    active:scale-95
+    `}>
       {icon && (
         <span className="text-4xl">{icon}</span>
         )}
