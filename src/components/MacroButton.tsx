@@ -1,8 +1,11 @@
 type MacroButtonProps = {
   label: string
   icon?: string
-  size?: "small" | "wide" | "large"
+  size?: MacroButtonSize
+  onClick: () => void
 }
+
+export type MacroButtonSize = "small" | "wide" | "large"
 
 const sizeClasses = {
   small: 'col-span-1 row-span-1',
@@ -10,7 +13,12 @@ const sizeClasses = {
   large: 'col-span-2 row-span-2',
 }
 
-function MacroButton({ label, icon, size = "small" }: MacroButtonProps) {
+function MacroButton({
+  label, 
+  icon, 
+  size = "small", 
+  onClick
+}: MacroButtonProps) {
   return (
     <button
     className={`
@@ -26,7 +34,9 @@ function MacroButton({ label, icon, size = "small" }: MacroButtonProps) {
     transition
     hover:bg-zinc-700
     active:scale-95
-    `}>
+    `}
+    onClick={onClick}
+    >
       {icon && (
         <span className="text-4xl">{icon}</span>
         )}
