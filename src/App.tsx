@@ -1,7 +1,9 @@
-import MacroGrid from "./components/MacroGrid"
+import HomePage from "./pages/HomePage"
+import MediaPage from "./pages/MediaPage"
+import NumpadPage from "./pages/NumpadPage"
 import { useState } from "react"
-import PageNavigation, { type Page } from "./components/PageNavigation"
-
+import PageNavigation from "./components/PageNavigation"
+import { type Page } from "./types"
 
 function App() {
     const [currentPage, setCurrentPage] = useState<Page>("home")
@@ -9,11 +11,11 @@ function App() {
     function renderPage() {
         switch (currentPage) {
             case "home":
-                return <MacroGrid />
+                return <HomePage />
             case "media":
-                return <div>Media Page</div>
+                return <MediaPage />
             case "numpad":
-                return <div>Numpad Page</div>
+                return <NumpadPage />
         }
     }
 

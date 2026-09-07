@@ -1,9 +1,9 @@
+import { type Page } from "../types"
+
 type PageNavigationProps = {
   currentPage: Page
   onPageChange: (page: Page) => void
 }
-
-export type Page = "home" | "media" | "numpad"
 
 function PageNavigation({ currentPage, onPageChange }: PageNavigationProps) {
 
