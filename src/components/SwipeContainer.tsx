@@ -1,9 +1,9 @@
-import { useRef, type ReactNode} from 'react'
+import { useRef, type ReactNode } from 'react'
 
 type SwipeContainerProps = {
-  onSwipeLeft: () => void
-  onSwipeRight: () => void
-  children: ReactNode
+    onSwipeLeft: () => void
+    onSwipeRight: () => void
+    children: ReactNode
 }
 
 const SWIPE_THRESHOLD = 50
@@ -17,7 +17,7 @@ function evaluateSwipe(startX: number | null, endX: number): "left" | "right" | 
     if (deltaX > SWIPE_THRESHOLD) {
         return "right"
     }
-    
+
     if (deltaX < -SWIPE_THRESHOLD) {
         return "left"
     }
@@ -28,7 +28,7 @@ function evaluateSwipe(startX: number | null, endX: number): "left" | "right" | 
 
 function SwipeContainer({ onSwipeLeft, onSwipeRight, children }: SwipeContainerProps) {
     const startX = useRef<number | null>(null)
-    
+
     return (
         <div
             onPointerDown={(event) => {

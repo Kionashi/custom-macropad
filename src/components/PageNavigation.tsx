@@ -1,8 +1,8 @@
 import { type Page } from "../types"
 
 type PageNavigationProps = {
-  currentPage: Page
-  onPageChange: (page: Page) => void
+    currentPage: Page
+    onPageChange: (page: Page) => void
 }
 
 function PageNavigation({ currentPage, onPageChange }: PageNavigationProps) {
@@ -10,13 +10,13 @@ function PageNavigation({ currentPage, onPageChange }: PageNavigationProps) {
     return (
         <div>
             <button className={currentPage === "home" ? "bg-zinc-700" : "bg-zinc-900"} onClick={() => onPageChange("home")}>
-            Home
+                Home
             </button>
             <button className={currentPage === "media" ? "bg-zinc-700" : "bg-zinc-900"} onClick={() => onPageChange("media")}>
-            Media
+                Media
             </button>
             <button className={currentPage === "numpad" ? "bg-zinc-700" : "bg-zinc-900"} onClick={() => onPageChange("numpad")}>
-            Numpad
+                Numpad
             </button>
         </div>
     )
