@@ -1,4 +1,5 @@
 import MacroButton, { type MacroButtonSize } from "./MacroButton"
+import { invoke } from "@tauri-apps/api/core"
 
 type ButtonData = {
     label: string
@@ -8,7 +9,7 @@ type ButtonData = {
 }
 
 const buttonData: ButtonData[] = [
-    { label: "Godot", icon: "🎮", onClick: () => { console.log("Launching Godot") } },
+    { label: "Godot", icon: "🎮", onClick: async () => { console.log(await invoke<string>("get_greeting", { name: "Godot" })) } },
     { label: "Steam", icon: "💻", size: "wide", onClick: () => { console.log("Launching Steam") } },
     { label: "Discord", icon: "💬", onClick: () => { console.log("Launching Discord") } },
     { label: "Spotify", icon: "🎵", onClick: () => { console.log("Launching Spotify") } },
