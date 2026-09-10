@@ -1,9 +1,25 @@
+import { invoke } from "@tauri-apps/api/core"
+
 type MacroButtonProps = {
     label: string
     icon?: string
     size?: MacroButtonSize
-    onClick: () => void
+    action?: MacroAction
 }
+
+export type MacroAction =
+    | {
+        type: "launch"
+        path: string
+    }
+    | {
+        type: "media"
+        command: "play_pause" | "next" | "previous" | "volume_up" | "volume_down"
+    }
+    | {
+        type: "key"
+        keys: string[]
+    }
 
 export type MacroButtonSize = "small" | "wide" | "large"
 
@@ -17,7 +33,7 @@ function MacroButton({
     label,
     icon,
     size = "small",
-    onClick
+    action
 }: MacroButtonProps) {
     return (
         <button
@@ -35,7 +51,7 @@ function MacroButton({
     hover:bg-zinc-700
     active:scale-95
     `}
-            onClick={onClick}
+            onClick={action ? getActionHandler(action) : undefined}
         >
             {icon && (
                 <span className="text-4xl">{icon}</span>
@@ -45,4 +61,16 @@ function MacroButton({
     )
 }
 
+function getActionHandler(action: MacroAction) {
+    switch (action.type) {
+        case "launch":
+            return async () => {
+                try {
+                    await invoke("launch_app", { path: action.path })
+                } catch (error) {
+                    alert("Failed to launch app:" + error)
+                }
+            }
+    }
+}
 export default MacroButton
