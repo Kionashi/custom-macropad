@@ -9,8 +9,26 @@ type ButtonData = {
 }
 
 const buttonData: ButtonData[] = [
-    { label: "Godot", icon: "🎮", onClick: async () => { console.log(await invoke<string>("get_greeting", { name: "Godot" })) } },
-    { label: "Steam", icon: "💻", size: "wide", onClick: () => { console.log("Launching Steam") } },
+    { label: "Godot", icon: "🎮", onClick:async () => {
+            try {
+                await invoke("launch_app", { path: "C:\\Tools\\Godot\\Godot_v4.7.1.exe" })
+            } catch (error) {
+                alert("Failed to launch app:" + error)
+            }
+        }
+    },
+    {
+        label: "Steam",
+        icon: "💻",
+        size: "wide",
+        onClick: async () => {
+            try {
+                await invoke("launch_app", { path: "notepad.exe" })
+            } catch (error) {
+                alert("Failed to launch app:" + error)
+            }
+        }
+    },
     { label: "Discord", icon: "💬", onClick: () => { console.log("Launching Discord") } },
     { label: "Spotify", icon: "🎵", onClick: () => { console.log("Launching Spotify") } },
     { label: "Games", icon: "🕹️", size: "large", onClick: () => { console.log("Launching Games") } },
