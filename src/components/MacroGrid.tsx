@@ -26,7 +26,7 @@ const buttonData: ButtonData[] = [
     { label: "Discord", icon: "💬" },
     { label: "Spotify", icon: "🎵" },
     { label: "Games", icon: "🕹️", size: "large" },
-    { label: "Numpad", icon: "🔢" }
+    { label: "Numpad", icon: "🔢", action: { type: "key", keys: ["1", "2", "3"] } }
 ]
 
 function MacroGrid() {

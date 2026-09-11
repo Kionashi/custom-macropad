@@ -71,6 +71,14 @@ function getActionHandler(action: MacroAction) {
                     alert("Failed to launch app:" + error)
                 }
             }
+        case "key":
+            return async () => {
+                try {
+                    await invoke("press_key", { keys: action.keys })
+                } catch (error) {
+                    alert("Failed to press key:" + error)
+                }
+            }
     }
 }
 export default MacroButton
