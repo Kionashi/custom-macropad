@@ -18,15 +18,15 @@ const buttonData: ButtonData[] = [
         label: "Steam",
         icon: "💻",
         size: "wide",
-        action: {
-            type: "launch",
-            path: "notepad.exe"
-        }
+        action: { type: "key", keys: ["CTRL", "V"] }
     },
-    { label: "Discord", icon: "💬" },
+    {
+        label: "Discord", icon: "💬", 
+        action: { type: "key", keys: ["a", "b", "c"] }
+    },
     { label: "Spotify", icon: "🎵", action: { type: "key", keys: ["ALT", "TAB"] } },
-    { label: "Games", icon: "🕹️", size: "large", action: { type: "key", keys: ["ctrl", "alt", "del"] } },
-    { label: "Numpad", icon: "🔢", action: { type: "key", keys: ["ctrl", "v"] } }
+    { label: "Games", icon: "🕹️", size: "large",  action: { type: "invoke", function: "start_tracker" } },
+    { label: "Numpad", icon: "🔢", action: { type: "key", keys: ["CTRL", "C"] } }
 ]
 
 function MacroGrid() {

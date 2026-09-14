@@ -20,6 +20,13 @@ export type MacroAction =
         type: "key"
         keys: string[]
     }
+    | {
+        type: "invoke"
+        function: string
+    }
+    | {
+        type: "test"
+    }
 
 export type MacroButtonSize = "small" | "wide" | "large"
 
@@ -77,6 +84,22 @@ function getActionHandler(action: MacroAction) {
                     await invoke("press_key", { keys: action.keys })
                 } catch (error) {
                     alert("Failed to press key:" + error)
+                }
+            }
+        case "invoke":
+            return async () => {
+                try {
+                    console.log(await invoke(action.function))
+                } catch (error) {
+                    alert("Failed to invoke function:" + error)
+                }
+            }
+        case "test":
+            return async () => {
+                try {
+                    console.log("CLICK")
+                } catch (error) {
+                    alert("Failed to execute test action:" + error)
                 }
             }
     }

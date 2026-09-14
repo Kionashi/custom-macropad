@@ -1,8 +1,18 @@
 use enigo::{Direction, Enigo, Key, Keyboard, Settings};
+use std::sync::{Arc, Mutex};
+use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, SetForegroundWindow};
+
+struct TrackerState {
+    last_foreground: Arc<Mutex<Option<usize>>>,
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let tracker_state = TrackerState {
+        last_foreground: Arc::new(Mutex::new(None)),
+    };
     tauri::Builder::default()
+        .manage(tracker_state)
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
@@ -13,7 +23,15 @@ pub fn run() {
             }
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![press_key, launch_app])
+        .invoke_handler(tauri::generate_handler![
+            press_key,
+            launch_app,
+            get_foreground_window,
+            get_macro_window,
+            start_tracker,
+            get_last_foreground,
+            restore_foreground_window
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -28,17 +46,13 @@ fn launch_app(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn press_key(keys: Vec<String>) -> Result<(), String> {
-    std::process::Command::new("notepad.exe")
-        .spawn()
-        .map_err(|error| error.to_string())?;
-
-    std::thread::sleep(std::time::Duration::from_millis(500));
+fn press_key(keys: Vec<String>, state: tauri::State<'_, TrackerState>) -> Result<(), String> {
+    
+    restore_window(&state)?;
 
     let mut enigo = Enigo::new(&Settings::default()).map_err(|error| error.to_string())?;
 
     let is_key_combination = keys.len() > 1;
-
     if is_key_combination {
         press_key_combination(&mut enigo, &keys)?;
 
@@ -62,7 +76,8 @@ fn press_single_key(enigo: &mut Enigo, key: Key) -> Result<(), String> {
 }
 
 fn press_key_combination(enigo: &mut Enigo, keys: &[String]) -> Result<(), String> {
-    let parsed_keys: Result<Vec<Key>, String> = keys.iter().map(|key| parse_key(key.as_str())).collect();
+    let parsed_keys: Result<Vec<Key>, String> =
+        keys.iter().map(|key| parse_key(key.as_str())).collect();
     let parsed_keys = parsed_keys?;
 
     for key in &parsed_keys {
@@ -81,7 +96,8 @@ fn press_key_combination(enigo: &mut Enigo, keys: &[String]) -> Result<(), Strin
 }
 
 fn parse_key(key: &str) -> Result<Key, String> {
-    match key.to_lowercase().as_str() {
+    let normalized = key.to_lowercase();
+    match normalized.as_str() {
         "ctrl" => Ok(Key::Control),
         "shift" => Ok(Key::Shift),
         "alt" => Ok(Key::Alt),
@@ -113,8 +129,8 @@ fn parse_key(key: &str) -> Result<Key, String> {
         "f12" => Ok(Key::F12),
         "win" | "super" | "command" => Ok(Key::Meta),
         _ => {
-            if key.chars().count() == 1 {
-                let character = key
+            if normalized.chars().count() == 1 {
+                let character = normalized
                     .chars()
                     .next()
                     .ok_or("Key cannot be empty".to_string())?;
@@ -124,4 +140,79 @@ fn parse_key(key: &str) -> Result<Key, String> {
             Err(format!("Unsupported key: {}", key))
         }
     }
+}
+
+#[tauri::command]
+fn get_foreground_window() -> Result<String, String> {
+    let hwnd = unsafe { GetForegroundWindow() };
+
+    Ok(format!("{:?}", hwnd))
+}
+
+#[tauri::command]
+fn get_macro_window(window: tauri::Window) -> Result<String, String> {
+    let hwnd = window.hwnd().map_err(|error| error.to_string())?;
+
+    Ok(format!("{:?}", hwnd))
+}
+
+#[tauri::command]
+fn start_tracker(
+    window: tauri::Window,
+    state: tauri::State<'_, TrackerState>,
+) -> Result<(), String> {
+    let macro_window = window.hwnd().map_err(|error| error.to_string())?.0 as usize;
+
+    let tracker_state = Arc::clone(&state.last_foreground);
+
+    std::thread::spawn(move || loop {
+        let foreground = unsafe { GetForegroundWindow() };
+
+        if foreground.0 as usize != macro_window {
+            let mut last_foreground = tracker_state.lock().unwrap();
+
+            *last_foreground = Some(foreground.0 as usize);
+        }
+
+        println!("Foreground: {:?}", foreground);
+        println!("MacroPad:   {:?}", macro_window);
+        println!("Last Foreground: {:?}", *tracker_state.lock().unwrap());
+
+        std::thread::sleep(std::time::Duration::from_secs(1));
+    });
+
+    Ok(())
+}
+
+#[tauri::command]
+fn get_last_foreground(state: tauri::State<'_, TrackerState>) -> Result<Option<usize>, String> {
+    let last_foreground = state
+        .last_foreground
+        .lock()
+        .map_err(|error| error.to_string())
+        .map(|last_foreground| *last_foreground);
+
+    print!("Last Foreground: {:?}", last_foreground);
+
+    last_foreground
+}
+
+#[tauri::command]
+fn restore_foreground_window(state: tauri::State<'_, TrackerState>) -> Result<(), String> {
+    restore_window(&state)
+}
+
+fn restore_window(state: &TrackerState) -> Result<(), String> {
+    // read state.last_foreground
+    let last_foreground = state.last_foreground.lock().map_err(|error| error.to_string())?.ok_or("No last foreground window found".to_string())?;
+        
+    // convert usize -> HWND
+    let hwnd = windows::Win32::Foundation::HWND(last_foreground as *mut std::ffi::c_void);
+    // call SetForegroundWindow
+    unsafe {
+        SetForegroundWindow(hwnd)
+            .ok()
+            .map_err(|error| error.to_string())?;
+    }
+    Ok(())
 }
