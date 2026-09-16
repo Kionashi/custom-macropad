@@ -1,6 +1,7 @@
 use enigo::{Direction, Enigo, Key, Keyboard, Settings};
 use std::sync::{Arc, Mutex};
 use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, SetForegroundWindow};
+use tauri::Manager;
 
 struct TrackerState {
     last_foreground: Arc<Mutex<Option<usize>>>,
@@ -13,7 +14,7 @@ pub fn run() {
     };
     tauri::Builder::default()
         .manage(tracker_state)
-        .setup(|app| {
+        .setup(|app: &mut tauri::App| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(
                     tauri_plugin_log::Builder::default()
@@ -21,14 +22,19 @@ pub fn run() {
                         .build(),
                 )?;
             }
+
+            let macro_window = get_macro_window(app)?.0 as usize;
+            let tracker_state = Arc::clone(
+                &app.state::<TrackerState>().last_foreground
+            );
+
+            start_tracker(macro_window, tracker_state)?;
+            
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             press_key,
             launch_app,
-            get_foreground_window,
-            get_macro_window,
-            start_tracker,
             get_last_foreground,
             restore_foreground_window
         ])
@@ -142,28 +148,18 @@ fn parse_key(key: &str) -> Result<Key, String> {
     }
 }
 
-#[tauri::command]
-fn get_foreground_window() -> Result<String, String> {
-    let hwnd = unsafe { GetForegroundWindow() };
-
-    Ok(format!("{:?}", hwnd))
-}
-
-#[tauri::command]
-fn get_macro_window(window: tauri::Window) -> Result<String, String> {
+fn get_macro_window(app: &mut tauri::App) -> Result<windows::Win32::Foundation::HWND, String> {
+    let window = app.get_webview_window("main")
+        .ok_or("Could not find main window".to_string())?;
     let hwnd = window.hwnd().map_err(|error| error.to_string())?;
 
-    Ok(format!("{:?}", hwnd))
+    Ok(hwnd)
 }
 
-#[tauri::command]
 fn start_tracker(
-    window: tauri::Window,
-    state: tauri::State<'_, TrackerState>,
+    macro_window: usize,
+    tracker_state: Arc<Mutex<Option<usize>>>,
 ) -> Result<(), String> {
-    let macro_window = window.hwnd().map_err(|error| error.to_string())?.0 as usize;
-
-    let tracker_state = Arc::clone(&state.last_foreground);
 
     std::thread::spawn(move || loop {
         let foreground = unsafe { GetForegroundWindow() };
@@ -208,7 +204,7 @@ fn restore_window(state: &TrackerState) -> Result<(), String> {
         
     // convert usize -> HWND
     let hwnd = windows::Win32::Foundation::HWND(last_foreground as *mut std::ffi::c_void);
-    // call SetForegroundWindow
+
     unsafe {
         SetForegroundWindow(hwnd)
             .ok()
