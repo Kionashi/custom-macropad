@@ -14,7 +14,7 @@ export type MacroAction =
     }
     | {
         type: "media"
-        command: "play_pause" | "next" | "previous" | "volume_up" | "volume_down"
+        command: "play_pause" | "next" | "previous" | "volume_up" | "volume_down" | "stop"
     }
     | {
         type: "key"
@@ -23,9 +23,6 @@ export type MacroAction =
     | {
         type: "invoke"
         function: string
-    }
-    | {
-        type: "test"
     }
 
 export type MacroButtonSize = "small" | "wide" | "large"
@@ -94,12 +91,12 @@ function getActionHandler(action: MacroAction) {
                     alert("Failed to invoke function:" + error)
                 }
             }
-        case "test":
+        case "media":
             return async () => {
                 try {
-                    console.log("CLICK")
+                    await invoke("press_key", { keys: [action.command] })
                 } catch (error) {
-                    alert("Failed to execute test action:" + error)
+                    alert("Failed to send media command:" + error)
                 }
             }
     }

@@ -66,8 +66,18 @@ fn press_key(keys: Vec<String>, state: tauri::State<'_, TrackerState>) -> Result
     }
 
     let first = keys.first().ok_or("No keys provided".to_string())?;
-    let key = parse_key(first)?;
 
+    let is_media_command = matches!(
+        first.to_lowercase().as_str(),
+        "play_pause" | "next" | "previous" | "stop" | "volume_up" | "volume_down"
+    );
+    
+    if is_media_command {
+        press_media_command(&mut enigo, first)?;
+        return Ok(());
+    }
+
+    let key = parse_key(first)?;
     press_single_key(&mut enigo, key)?;
 
     Ok(())
@@ -145,6 +155,27 @@ fn parse_key(key: &str) -> Result<Key, String> {
 
             Err(format!("Unsupported key: {}", key))
         }
+    }
+}
+
+fn press_media_command(enigo: &mut Enigo, command: &str) -> Result<(), String> {
+    let key = parse_media_command(command)?;
+    enigo
+        .key(key, Direction::Click)
+        .map_err(|error| error.to_string())?;
+
+    Ok(())
+}
+
+fn parse_media_command(command: &str) -> Result<Key, String> {
+    match command.to_lowercase().as_str() {
+        "play_pause" => Ok(Key::MediaPlayPause),
+        "next" => Ok(Key::MediaNextTrack),
+        "previous" => Ok(Key::MediaPrevTrack),
+        "stop" => Ok(Key::MediaStop),
+        "volume_up" => Ok(Key::VolumeUp),
+        "volume_down" => Ok(Key::VolumeDown),
+        _ => Err(format!("Unsupported media command: {}", command)),
     }
 }
 

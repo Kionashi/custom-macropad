@@ -1,11 +1,6 @@
 import MacroButton, { type MacroButtonSize, type MacroAction } from "./MacroButton"
 
-type ButtonData = {
-    label: string
-    icon: string
-    size?: MacroButtonSize
-    action?: MacroAction
-}
+
 
 const buttonData: ButtonData[] = [
     {
