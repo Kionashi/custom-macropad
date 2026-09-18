@@ -1,33 +1,14 @@
-import MacroButton, { type MacroButtonSize, type MacroAction } from "./MacroButton"
+import MacroButton from "./MacroButton"
+import { type MacroButtonData } from "../types/MacroButtonData"
 
+export type MacroGridProps = {
+    buttonsData: MacroButtonData[]
+}
 
-
-const buttonData: ButtonData[] = [
-    {
-        label: "Godot", icon: "🎮", action: {
-            type: "launch",
-            path: "C:\\Tools\\Godot\\Godot_v4.7.1.exe"
-        }
-    },
-    {
-        label: "Steam",
-        icon: "💻",
-        size: "wide",
-        action: { type: "key", keys: ["CTRL", "V"] }
-    },
-    {
-        label: "Discord", icon: "💬", 
-        action: { type: "key", keys: ["a", "b", "c"] }
-    },
-    { label: "Spotify", icon: "🎵", action: { type: "key", keys: ["ALT", "TAB"] } },
-    { label: "Games", icon: "🕹️", size: "large",  action: { type: "invoke", function: "start_tracker" } },
-    { label: "Numpad", icon: "🔢", action: { type: "key", keys: ["CTRL", "C"] } }
-]
-
-function MacroGrid() {
+function MacroGrid({ buttonsData }: MacroGridProps) {
     return (
         <div className="grid grid-cols-4 auto-rows-[8rem] gap-4">
-            {buttonData.map((button) => (
+            {buttonsData.map((button) => (
                 <MacroButton
                     key={button.label}
                     label={button.label}

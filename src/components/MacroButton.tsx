@@ -1,31 +1,13 @@
 import { invoke } from "@tauri-apps/api/core"
+import { type MacroButtonSize } from "../types/MacroButtonSize"
+import { type MacroButtonAction } from "../types/MacroButtonAction"
 
 type MacroButtonProps = {
     label: string
     icon?: string
     size?: MacroButtonSize
-    action?: MacroAction
+    action?: MacroButtonAction
 }
-
-export type MacroAction =
-    | {
-        type: "launch"
-        path: string
-    }
-    | {
-        type: "media"
-        command: "play_pause" | "next" | "previous" | "volume_up" | "volume_down" | "stop"
-    }
-    | {
-        type: "key"
-        keys: string[]
-    }
-    | {
-        type: "invoke"
-        function: string
-    }
-
-export type MacroButtonSize = "small" | "wide" | "large"
 
 const sizeClasses = {
     small: 'col-span-1 row-span-1',
@@ -65,7 +47,7 @@ function MacroButton({
     )
 }
 
-function getActionHandler(action: MacroAction) {
+function getActionHandler(action: MacroButtonAction) {
     switch (action.type) {
         case "launch":
             return async () => {
@@ -81,14 +63,6 @@ function getActionHandler(action: MacroAction) {
                     await invoke("press_key", { keys: action.keys })
                 } catch (error) {
                     alert("Failed to press key:" + error)
-                }
-            }
-        case "invoke":
-            return async () => {
-                try {
-                    console.log(await invoke(action.function))
-                } catch (error) {
-                    alert("Failed to invoke function:" + error)
                 }
             }
         case "media":

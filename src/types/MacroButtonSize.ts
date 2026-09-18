@@ -1,0 +1,1 @@
+export type MacroButtonSize = "small" | "wide" | "large"
