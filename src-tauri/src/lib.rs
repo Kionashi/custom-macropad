@@ -144,6 +144,9 @@ fn parse_key(key: &str) -> Result<Key, String> {
         "f11" => Ok(Key::F11),
         "f12" => Ok(Key::F12),
         "win" | "super" | "command" => Ok(Key::Meta),
+        "numlock" => Ok(Key::Numlock),
+        "/" => Ok(Key::Divide),
+        "*" => Ok(Key::Multiply),
         _ => {
             if normalized.chars().count() == 1 {
                 let character = normalized
