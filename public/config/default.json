@@ -46,6 +46,7 @@
       {
         "label": "Numpad",
         "icon": "🔢",
+        "size": "tall",
         "action": {
           "type": "key",
           "keys": ["CTRL", "C"]

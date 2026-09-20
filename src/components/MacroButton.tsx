@@ -13,6 +13,7 @@ const sizeClasses = {
     small: 'col-span-1 row-span-1',
     wide: 'col-span-2 row-span-1',
     large: 'col-span-2 row-span-2',
+    tall: 'col-span-1 row-span-2'
 }
 
 function MacroButton({
