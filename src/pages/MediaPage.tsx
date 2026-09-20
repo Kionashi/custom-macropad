@@ -1,5 +1,5 @@
-import MacroButton from "../components/MacroButton"
 import { type MacroButtonData } from "../types/MacroButtonData"
+import MacroGrid from "../components/MacroGrid"
 
 const mediaButtons: MacroButtonData[] = [
     {
@@ -30,6 +30,7 @@ const mediaButtons: MacroButtonData[] = [
     {
         label: "Volume Down",
         icon: "🔉",
+        size: "tall",
         action: {
             type: "media",
             command: "volume_down",
@@ -38,6 +39,7 @@ const mediaButtons: MacroButtonData[] = [
     {
         label: "Volume Up",
         icon: "🔊",
+        size: "tall",
         action: {
             type: "media",
             command: "volume_up",
@@ -46,6 +48,7 @@ const mediaButtons: MacroButtonData[] = [
     {
         label: "Stop",
         icon: "⏹️",
+        size: "wide",
         action: {
             type: "media",
             command: "stop",
@@ -63,16 +66,8 @@ function MediaPage() {
                 </p>
             </div>
 
-            <div className="flex-1 grid grid-cols-4 auto-rows-[8rem] gap-4">
-                {mediaButtons.map((button) => (
-                    <MacroButton
-                        key={button.label}
-                        label={button.label}
-                        icon={button.icon}
-                        size={button.size}
-                        action={button.action}
-                    />
-                ))}
+            <div className="flex-1">
+                <MacroGrid buttonsData={mediaButtons} />
             </div>
         </div>
     )
