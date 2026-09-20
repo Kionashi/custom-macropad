@@ -1,38 +1,29 @@
+import { useEffect, useState } from "react"
 import MacroGrid from "../components/MacroGrid"
-
+import { loadConfig } from "../config/loadConfig"
 import type { MacroPadConfig } from "../types/MacroPadConfig"
 
-
-
-const config: MacroPadConfig = {
-    home: {
-        buttons: [
-            {
-                label: "Godot",
-                icon: "🎮",
-                action: {
-                    type: "launch",
-                    path: "C:\\Tools\\Godot\\Godot_v4.7.1.exe"
-                }
-            },
-            {
-                label: "Steam",
-                icon: "💻",
-                size: "wide",
-                action: { type: "key", keys: ["CTRL", "V"] }
-            },
-            {
-                label: "Discord", icon: "💬",
-                action: { type: "key", keys: ["a", "b", "c"] }
-            },
-            { label: "Spotify", icon: "🎵", action: { type: "key", keys: ["ALT", "TAB"] } },
-            { label: "Games", icon: "🕹️", size: "large", action: { type: "key", keys: ["1", "2", "3"] } },
-            { label: "Numpad", icon: "🔢", action: { type: "key", keys: ["CTRL", "C"] } }
-        ]
-    }
-}
-
 function HomePage() {
+    const [config, setConfig] = useState<MacroPadConfig | null>(null)
+    const [error, setError] = useState<Error | null>(null)
+
+    useEffect(() => {
+        loadConfig().then((config) => {
+            setConfig(config)
+        }).catch((error) => {
+            setError(error)
+        })
+    }, [])
+
+    if (error) {
+        return <div>{error.message}</div>
+    }
+
+    if (config === null) {
+        return <div>Loading...</div>
+    }
+
+
     return (
         <div>
             <h1>My Macro Pad</h1>
