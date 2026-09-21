@@ -29,6 +29,7 @@
       {
         "label": "Spotify",
         "icon": "🎵",
+        "size": "tall",
         "action": {
           "type": "key",
           "keys": ["ALT", "TAB"]
