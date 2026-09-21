@@ -199,14 +199,19 @@ fn start_tracker(
         let foreground = unsafe { GetForegroundWindow() };
 
         if foreground.0 as usize != macro_window {
-            let mut last_foreground = tracker_state.lock().unwrap();
+            let mut last_foreground = match tracker_state.lock() {
+                Ok(last_foreground) => last_foreground,
+                Err(error) => {
+                    eprintln!("Failed to lock foreground tracker: {}", error);
+                    break;
+                }
+            };
 
             *last_foreground = Some(foreground.0 as usize);
         }
 
         println!("Foreground: {:?}", foreground);
         println!("MacroPad:   {:?}", macro_window);
-        println!("Last Foreground: {:?}", *tracker_state.lock().unwrap());
 
         std::thread::sleep(std::time::Duration::from_secs(1));
     });
