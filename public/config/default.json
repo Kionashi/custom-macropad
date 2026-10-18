@@ -2,55 +2,93 @@
   "home": {
     "buttons": [
       {
+        "label": "Steam",
+        "icon": "🕹️",
+        "size": "small",
+        "action": {
+          "type": "launch",
+          "path": "C:\\Program Files (x86)\\Steam\\steam.exe"
+        }
+      },
+      {
+        "label": "VS Code",
+        "icon": "👨‍💻",
+        "size": "wide",
+        "action": {
+          "type": "launch",
+          "path": "C:\\Users\\Usuario\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
+        }
+      },
+      {
+        "label": "Spotify",
+        "icon": "🎵",
+        "size": "small",
+        "action": {
+          "type": "launch",
+          "path": "spotify:"
+        }
+      },
+      {
+        "label": "Opera GX",
+        "icon": "🔴",
+        "size": "tall",
+        "action": {
+          "type": "launch",
+          "path": "C:\\Users\\Usuario\\AppData\\Local\\Programs\\Opera GX\\opera.exe"
+        }
+      },
+      {
+        "label": "ChatGPT",
+        "icon": "💬",
+        "size": "large",
+        "action": {
+          "type": "launch",
+          "path": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.1007.2314.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe"
+        }
+      },
+      {
         "label": "Godot",
         "icon": "🎮",
+        "size": "tall",
         "action": {
           "type": "launch",
           "path": "C:\\Tools\\Godot\\Godot_v4.7.1.exe"
         }
       },
       {
-        "label": "Steam",
-        "icon": "💻",
-        "size": "wide",
+        "label": "Notion",
+        "icon": "📝",
+        "size": "small",
         "action": {
-          "type": "key",
-          "keys": ["CTRL", "V"]
+          "type": "launch",
+          "path": "C:\\Users\\Usuario\\AppData\\Local\\Programs\\Notion\\Notion.exe"
         }
       },
       {
-        "label": "Discord",
-        "icon": "💬",
-        "action": {
-          "type": "key",
-          "keys": ["a", "b", "c"]
-        }
-      },
-      {
-        "label": "Spotify",
-        "icon": "🎵",
-        "size": "tall",
-        "action": {
-          "type": "key",
-          "keys": ["ALT", "TAB"]
-        }
-      },
-      {
-        "label": "Games",
-        "icon": "🕹️",
+        "label": "Quick Minimize",
+        "icon": "🫥",
         "size": "large",
         "action": {
           "type": "key",
-          "keys": ["1123", "2", "3"]
+          "keys": ["QUICK_MINIMIZE"]
         }
       },
       {
-        "label": "Numpad",
-        "icon": "🔢",
+        "label": "Show Desktop",
+        "icon": "🖥️",
         "size": "tall",
         "action": {
           "type": "key",
-          "keys": ["CTRL", "C"]
+          "keys": ["WIN", "D"]
+        }
+      },
+       {
+        "label": "Paste",
+        "icon": "📋",
+        "size": "small",
+        "action": {
+          "type": "key",
+          "keys": ["CTRL", "V"]
         }
       }
     ]
