@@ -11,3 +11,14 @@ export type MacroButtonAction =
         type: "key"
         keys: string[]
     }
+    | {
+        type: "open"
+        target: string
+    }
+
+export const MACRO_BUTTON_ACTION_TYPES = [
+    "launch",
+    "media",
+    "key",
+    "open",
+] as const satisfies readonly MacroButtonAction["type"][]

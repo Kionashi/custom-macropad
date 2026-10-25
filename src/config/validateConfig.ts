@@ -1,4 +1,5 @@
 import type { MacroPadConfig } from "../types/MacroPadConfig"
+import { MACRO_BUTTON_ACTION_TYPES } from "../types/MacroButtonAction"
 
 function validateConfig(config: unknown): MacroPadConfig {
     if (typeof config !== "object" || config === null) {
@@ -73,12 +74,11 @@ function validateConfig(config: unknown): MacroPadConfig {
         }
 
         if (
-            action.type !== "launch" &&
-            action.type !== "key" &&
-            action.type !== "media"
+           !MACRO_BUTTON_ACTION_TYPES.includes(action.type)
         ) {
             throw new Error(
-                `${buttonPath} has an invalid action type '${String(action.type)}'. Expected 'launch', 'key', or 'media'`
+                `${buttonPath} has an invalid action type '${String(action.type)}'. ` +
+                `Expected ${MACRO_BUTTON_ACTION_TYPES.join(", ")}`
             )
         }
 

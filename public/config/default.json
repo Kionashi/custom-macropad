@@ -24,8 +24,8 @@
         "icon": "🎵",
         "size": "small",
         "action": {
-          "type": "launch",
-          "path": "spotify:"
+          "type": "open",
+          "target": "spotify:"
         }
       },
       {
@@ -65,7 +65,7 @@
         }
       },
       {
-        "label": "Quick Minimize",
+        "label": "Something else",
         "icon": "🫥",
         "size": "large",
         "action": {

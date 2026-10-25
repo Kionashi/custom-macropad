@@ -74,6 +74,14 @@ function getActionHandler(action: MacroButtonAction) {
                     alert("Failed to send media command:" + error)
                 }
             }
+        case "open":
+            return async () => {
+                try {
+                    await invoke("open_in_explorer", { target: action.target })
+                } catch (error) {
+                    alert("Failed to open in explorer:" + error)
+                }
+            }
     }
 }
 export default MacroButton

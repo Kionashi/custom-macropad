@@ -1,7 +1,8 @@
 use enigo::{Direction, Enigo, Key, Keyboard, Settings};
+use tauri_plugin_opener::OpenerExt;
 use std::sync::{Arc, Mutex};
-use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, SetForegroundWindow};
 use tauri::Manager;
+use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, SetForegroundWindow};
 
 struct TrackerState {
     last_foreground: Arc<Mutex<Option<usize>>>,
@@ -13,6 +14,7 @@ pub fn run() {
         last_foreground: Arc::new(Mutex::new(None)),
     };
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .manage(tracker_state)
         .setup(|app: &mut tauri::App| {
             if cfg!(debug_assertions) {
@@ -22,21 +24,20 @@ pub fn run() {
                         .build(),
                 )?;
             }
-
+        
             let macro_window = get_macro_window(app)?.0 as usize;
-            let tracker_state = Arc::clone(
-                &app.state::<TrackerState>().last_foreground
-            );
+            let tracker_state = Arc::clone(&app.state::<TrackerState>().last_foreground);
 
             start_tracker(macro_window, tracker_state)?;
-            
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             press_key,
             launch_app,
             get_last_foreground,
-            restore_foreground_window
+            restore_foreground_window,
+            open_in_explorer
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -52,8 +53,14 @@ fn launch_app(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn open_in_explorer(app: tauri::AppHandle, target: String) -> Result<(), String> {
+    app.opener()
+        .reveal_item_in_dir(target)
+        .map_err(|error| error.to_string())
+}
+
+#[tauri::command]
 fn press_key(keys: Vec<String>, state: tauri::State<'_, TrackerState>) -> Result<(), String> {
-    
     restore_window(&state)?;
 
     let mut enigo = Enigo::new(&Settings::default()).map_err(|error| error.to_string())?;
@@ -71,7 +78,7 @@ fn press_key(keys: Vec<String>, state: tauri::State<'_, TrackerState>) -> Result
         first.to_lowercase().as_str(),
         "play_pause" | "next" | "previous" | "stop" | "volume_up" | "volume_down"
     );
-    
+
     if is_media_command {
         press_media_command(&mut enigo, first)?;
         return Ok(());
@@ -194,7 +201,6 @@ fn start_tracker(
     macro_window: usize,
     tracker_state: Arc<Mutex<Option<usize>>>,
 ) -> Result<(), String> {
-
     std::thread::spawn(move || loop {
         let foreground = unsafe { GetForegroundWindow() };
 
@@ -239,8 +245,12 @@ fn restore_foreground_window(state: tauri::State<'_, TrackerState>) -> Result<()
 
 fn restore_window(state: &TrackerState) -> Result<(), String> {
     // read state.last_foreground
-    let last_foreground = state.last_foreground.lock().map_err(|error| error.to_string())?.ok_or("No last foreground window found".to_string())?;
-        
+    let last_foreground = state
+        .last_foreground
+        .lock()
+        .map_err(|error| error.to_string())?
+        .ok_or("No last foreground window found".to_string())?;
+
     // convert usize -> HWND
     let hwnd = windows::Win32::Foundation::HWND(last_foreground as *mut std::ffi::c_void);
 
