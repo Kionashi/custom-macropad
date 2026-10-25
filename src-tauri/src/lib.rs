@@ -37,7 +37,7 @@ pub fn run() {
             launch_app,
             get_last_foreground,
             restore_foreground_window,
-            open_in_explorer
+            open_uri
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -53,9 +53,9 @@ fn launch_app(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-fn open_in_explorer(app: tauri::AppHandle, target: String) -> Result<(), String> {
+fn open_uri(app: tauri::AppHandle, target: String) -> Result<(), String> {
     app.opener()
-        .reveal_item_in_dir(target)
+        .open_url(target, None::<&str>)
         .map_err(|error| error.to_string())
 }
 

@@ -77,9 +77,9 @@ function getActionHandler(action: MacroButtonAction) {
         case "open":
             return async () => {
                 try {
-                    await invoke("open_in_explorer", { target: action.target })
+                    await invoke("open_uri", { target: action.target })
                 } catch (error) {
-                    alert("Failed to open in explorer:" + error)
+                    alert("Failed to open URI: " + error)
                 }
             }
     }
